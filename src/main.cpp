@@ -12,14 +12,15 @@ int main() {
 
 	serverSock srv(5678);
 
-	srv.Run();
+	//srv.Run();
 	//sleep(10);
 
+	srv.ThreadSock();
 	cout<<"Enter 'quit' to exit ..."<<endl;
 	while(in_arg != "quit"){
 		getline(cin, in_arg);
 
 	}
-	srv.Stop();
+	//srv.Stop();
 	return 0;
 }

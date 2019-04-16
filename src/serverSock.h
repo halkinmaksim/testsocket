@@ -29,6 +29,7 @@ public:
 	void Run();
 	void Stop();
 
+	void ThreadSock();
 	bool isInit;
 	bool stopSock;
 
@@ -41,6 +42,11 @@ protected:
 
 	pthread_t p_thread_sock;
 	static void* _thread_sock(void*);
+
+
+
+
+
 };
 
 #endif /* SRC_SERVERSOCK_H_ */

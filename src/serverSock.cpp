@@ -53,6 +53,63 @@ void serverSock::Stop(){
 	pthread_join(p_thread_sock,NULL);
 
 }
+
+
+void serverSock::ThreadSock(){
+
+	serverSock* c;
+	socklen_t clilen;
+	int cnt = 0;
+
+	struct sockaddr cliaddr;
+	sockaddr_in cs_addr;
+	clilen = sizeof(cs_addr);
+
+	printf("sizeof(cliaddr) %d \n",clilen);
+
+	char buf[1024];
+	int bytes_read;
+
+	int sock;
+		//if(arg != NULL){
+	while(!stopSock){
+		//cout << "thread test"<<endl;
+		//sock = accept(c->sockfd,  &cliaddr, &clilen);
+		sock = accept(sockfd, (struct sockaddr* )&cs_addr, &clilen);
+		if(sock < 0){
+			cout << "Error accept"<<endl;
+			stopSock = true;
+			continue;
+		}
+		printf("sizeof(cliaddr) %d \n",clilen);
+		printf("Connected %d \n",cs_addr.sin_addr.s_addr);
+		//cout<<""
+		//printf("Connected %s \n",cliaddr.sa_family);
+
+		while(true){
+
+			//bytes_read = read(sock, buf, 1024);
+			bytes_read = recv(sock, buf, 1024, 0);
+			//sleep(1);
+			if(bytes_read <= 0){
+				cout<<"err"<<endl;
+			if(bytes_read <= 0) break;
+				send(sock, buf, bytes_read, 0);
+			}else{
+				printf("bytes_read %d \n", bytes_read);
+			}
+
+		}
+		close(sock);
+		cnt++;
+		if(cnt > 1){
+			stopSock = true;
+		}
+
+	}
+}
+
+
 void* serverSock::_thread_sock(void* arg){
 	serverSock* c;
 	socklen_t clilen;
