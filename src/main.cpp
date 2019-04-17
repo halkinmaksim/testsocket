@@ -13,6 +13,9 @@ int main() {
 	serverSock srv(5678);
 
 	//srv.Run();
+	//srv.Run();
+	//sleep(10);
+	//srv.Run();
 	//sleep(10);
 
 	srv.ThreadSock();

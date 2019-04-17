@@ -43,7 +43,7 @@ protected:
 	pthread_t p_thread_sock;
 	static void* _thread_sock(void*);
 
-
+	static void* _thread_read_sock(void*);
 
 
 

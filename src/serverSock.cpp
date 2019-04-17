@@ -55,6 +55,7 @@ void serverSock::Stop(){
 }
 
 
+
 void serverSock::ThreadSock(){
 
 	serverSock* c;
@@ -153,4 +154,9 @@ void* serverSock::_thread_sock(void* arg){
 			}
 		}
 		return NULL;
+}
+
+
+void* serverSock::_thread_read_sock(void*){
+
 }
