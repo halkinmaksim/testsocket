@@ -14,6 +14,7 @@ serverSock::serverSock(int port) {
 	isInit = false;
 	stopSock = false;
 	p_thread_sock = NULL;
+	Clients.clear();
 	if(!Init()){
 		cout<<"Error init socket"<<endl;
 	}
@@ -22,6 +23,10 @@ serverSock::serverSock(int port) {
 serverSock::~serverSock() {
 	// TODO Auto-generated destructor stub
 	//close();
+	for(int i = 0; i < Clients.size(); i++){
+		delete(Clients[i]);
+	}
+	Clients.clear();
 }
 
 bool serverSock::Init(){
@@ -84,9 +89,14 @@ void serverSock::ThreadSock(){
 		}
 		printf("sizeof(cliaddr) %d \n",clilen);
 		printf("Connected %d \n",cs_addr.sin_addr.s_addr);
+
+		//Clients.push_back(new clientSock(sock));
+		Clients.push_back(new clientSock(sock,std::bind(&serverSock::action_f,this,_1)));
+		//Clients.push_back(new clientSock(sock,&action_f));
+
 		//cout<<""
 		//printf("Connected %s \n",cliaddr.sa_family);
-
+/*
 		while(true){
 
 			//bytes_read = read(sock, buf, 1024);
@@ -100,8 +110,8 @@ void serverSock::ThreadSock(){
 				printf("bytes_read %d \n", bytes_read);
 			}
 
-		}
-		close(sock);
+		}*/
+		//close(sock);
 		cnt++;
 		if(cnt > 1){
 			stopSock = true;
@@ -109,6 +119,25 @@ void serverSock::ThreadSock(){
 
 	}
 }
+
+
+bool serverSock::action_f(string &arguments){
+	int find_pos;
+	find_pos = arguments.find("exit");
+	if(find_pos != string::npos){
+		arguments = "exit";
+		return true;
+	}
+	find_pos = arguments.find("version");
+	if(find_pos != string::npos){
+		arguments = "Version Socket Server 1.00";
+		return true;
+	}
+	cout<<"arguments" << arguments << endl;
+	arguments = "error";
+	return false;
+}
+
 
 
 void* serverSock::_thread_sock(void* arg){

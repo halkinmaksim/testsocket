@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/clientSock.cpp \
 ../src/main.cpp \
 ../src/serverSock.cpp 
 
 OBJS += \
+./src/clientSock.o \
 ./src/main.o \
 ./src/serverSock.o 
 
 CPP_DEPS += \
+./src/clientSock.d \
 ./src/main.d \
 ./src/serverSock.d 
 

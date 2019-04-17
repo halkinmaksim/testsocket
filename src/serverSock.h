@@ -13,12 +13,18 @@
 #include <arpa/inet.h>
 
 #include <iostream>
+#include <vector>
 
 #include <pthread.h>
 #include <unistd.h>  // problem solved! it compiles!
 #include <termios.h> // POSIX terminal control definitionss
 
+#include "clientSock.h"
+
+
+
 using namespace std;
+using namespace std::placeholders; // for `_1`
 
 class serverSock {
 public:
@@ -30,6 +36,8 @@ public:
 	void Stop();
 
 	void ThreadSock();
+
+	bool action_f(string &arguments);
 	bool isInit;
 	bool stopSock;
 
@@ -44,6 +52,8 @@ protected:
 	static void* _thread_sock(void*);
 
 	static void* _thread_read_sock(void*);
+
+	std::vector<clientSock*>	Clients;
 
 
 
