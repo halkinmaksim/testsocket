@@ -7,17 +7,14 @@
 
 #include "serverSock.h"
 
+
+//Init server socket
 serverSock::serverSock(int port) {
-	// TODO Auto-generated constructor stub
 	listeningPort = port;
 	sockfd = -1;
 	isInit = false;
 	stopSock = false;
 	p_thread_sock = NULL;
-	Clients.clear();
-	if(!Init()){
-		cout<<"Error init socket"<<endl;
-	}
 }
 
 serverSock::~serverSock() {
@@ -44,7 +41,7 @@ bool serverSock::Init(){
 		perror("bind");
 		return false;
 	}
-	listen(sockfd, 1);
+	listen(sockfd, 3);
 	return true;
 }
 
@@ -60,7 +57,7 @@ void serverSock::Stop(){
 }
 
 
-
+// start server
 void serverSock::ThreadSock(){
 
 	serverSock* c;
@@ -79,9 +76,7 @@ void serverSock::ThreadSock(){
 	int sock;
 		//if(arg != NULL){
 	while(!stopSock){
-		//cout << "thread test"<<endl;
-		//sock = accept(c->sockfd,  &cliaddr, &clilen);
-		sock = accept(sockfd, (struct sockaddr* )&cs_addr, &clilen);
+		sock = accept(sockfd, NULL, NULL);
 		if(sock < 0){
 			cout << "Error accept"<<endl;
 			stopSock = true;
@@ -90,28 +85,9 @@ void serverSock::ThreadSock(){
 		printf("sizeof(cliaddr) %d \n",clilen);
 		printf("Connected %d \n",cs_addr.sin_addr.s_addr);
 
-		//Clients.push_back(new clientSock(sock));
+		// after connect, start thread read data from socket
 		Clients.push_back(new clientSock(sock,std::bind(&serverSock::action_f,this,_1)));
-		//Clients.push_back(new clientSock(sock,&action_f));
 
-		//cout<<""
-		//printf("Connected %s \n",cliaddr.sa_family);
-/*
-		while(true){
-
-			//bytes_read = read(sock, buf, 1024);
-			bytes_read = recv(sock, buf, 1024, 0);
-			//sleep(1);
-			if(bytes_read <= 0){
-				cout<<"err"<<endl;
-			if(bytes_read <= 0) break;
-				send(sock, buf, bytes_read, 0);
-			}else{
-				printf("bytes_read %d \n", bytes_read);
-			}
-
-		}*/
-		//close(sock);
 		cnt++;
 		if(cnt > 1){
 			stopSock = true;

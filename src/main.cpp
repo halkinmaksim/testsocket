@@ -12,13 +12,16 @@ int main() {
 
 	serverSock srv(5678);
 
-	//srv.Run();
-	//srv.Run();
-	//sleep(10);
-	//srv.Run();
-	//sleep(10);
+	if(!srv.Init()){
+		cout << " Error init socket"<<endl;
+		return -1;
+	}
+	//Start thread for keyboard input
 
+	//Start main thread for listen socket
 	srv.ThreadSock();
+
+
 	cout<<"Enter 'quit' to exit ..."<<endl;
 	while(in_arg != "quit"){
 		getline(cin, in_arg);
