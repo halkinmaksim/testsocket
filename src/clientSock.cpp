@@ -68,49 +68,51 @@ void clientSock::_thread_sock_read(){
     char msg[1024];
 
     string linecmd;
+    string in_buff;
 
     while (!thread_sock_read_stop) {
 
     	code_recv =recv(psocket, &msg, 1024, 0);
     	if(code_recv > 0){
-  //  		cout<<"msg = "<<msg << endl;
-    		linecmd = string(msg);
-    		if(action_f != NULL){
-    			if(action_f(linecmd)){
-    				if(linecmd != "exit"){
-    					send(psocket, linecmd.c_str(), linecmd.size(), 0);
-    				}else{
-    					close(psocket);
+    		in_buff.append(msg,code_recv);
+    		cout<<"in_buff = "<<in_buff << endl;
+    		int pos_carr_return = in_buff.find('\r');
+    		cout<<"pos_carr_return = "<<pos_carr_return << endl;
 
-    				}
+    		if(pos_carr_return != string::npos){
+    			linecmd = in_buff.substr(0,pos_carr_return);
+    			in_buff.erase(0,pos_carr_return+1);
+    			if(action_f != NULL){
+
+    				cout<<"cmd = "<<linecmd << endl;
+    			   	if(action_f(linecmd)){
+    			   		send(psocket, "OK\n", 3, 0);
+    			   		if(linecmd != "exit"){
+    			   			send(psocket, linecmd.c_str(), linecmd.size(), 0);
+    			   		}else{
+    			   			close(psocket);
+    			   		}
+    			   	}else{
+    			   		send(psocket, "ERROR\n", 6, 0);
+    			   		cout<<"cmd not found = "<<linecmd << endl;
+    			   		continue;
+    			    }
+
     			}else{
-    				cout<<"cmd not found = "<<linecmd << endl;
-    				return;
-    			}
+    			    //cout<<"linecmd = "<<linecmd << endl;
+	    		}
 
     		}else{
-    			cout<<"linecmd = "<<linecmd << endl;
+    			continue;
     		}
 
     	}else{
     		printf("client %d close socket \n", psocket);
+    		close(psocket);
     		return;
     	}
 
 
-        /*code1 = receive(key);
-        code2 = receive(message);
-        if(code1==0 || code2==0){
-            disconnect();
-            if(mDisconnectListener!=NULL){
-                (*mDisconnectListener)(this);
-            }
-        }
-        else if(code1!=-1 && code2!=-1){
-            if(mMessageListenerMap[key]!=NULL){
-                (*mMessageListenerMap[key])(this, stringToVector(message));
-            }
-        }*/
     }
 }
 

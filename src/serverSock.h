@@ -32,10 +32,21 @@ public:
 	virtual ~serverSock();
 	bool Init();
 
+
+
+
 	void Run();
 	void Stop();
-
 	void ThreadSock();
+
+
+
+
+	pthread_t t_thread_key_input;
+	void StartKeyThread();
+	void StopKeyThread();
+	static void* _thread_key_input(void*);	//	Thread for read data from keyboard
+
 
 	bool action_f(string &arguments);
 	bool isInit;

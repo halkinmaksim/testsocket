@@ -30,8 +30,10 @@ using namespace std;
 
 class clientSock {
 public:
+
+
 	clientSock(int socket);
-	//clientSock(int socket,bool (*action_f)(string &arguments));
+	//	Create client with pointer to action func
 	clientSock(int socket,std::function<bool(string &arguments)> action_f);
 	~clientSock();
 

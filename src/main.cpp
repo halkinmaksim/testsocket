@@ -17,16 +17,12 @@ int main() {
 		return -1;
 	}
 	//Start thread for keyboard input
-
+	srv.StartKeyThread();
 	//Start main thread for listen socket
 	srv.ThreadSock();
 
 
-	cout<<"Enter 'quit' to exit ..."<<endl;
-	while(in_arg != "quit"){
-		getline(cin, in_arg);
-
-	}
+	srv.StopKeyThread();
 	//srv.Stop();
 	return 0;
 }
