@@ -29,11 +29,22 @@ serverSock::~serverSock() {
 }
 
 bool serverSock::Init(){
+	int enable;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sockfd < 0){
 		isInit = false;
+		perror("socket");
 		return false;
 	}
+
+	enable = 1;
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
+			(char *)&enable, sizeof(enable)) == -1) {
+		close(sockfd);
+		perror("setsockopt");
+	    return false;
+	}
+
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(listeningPort);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -60,11 +71,19 @@ void serverSock::ThreadSock(){
 	socklen_t clilen;
 	int cnt = 0;
 
+	int flags;
+	struct sockaddr_in addr;	//client address
+	socklen_t addrlen;
+	addrlen = sizeof(addr);
+
+
+
+
+
 	struct sockaddr cliaddr;
 	sockaddr_in cs_addr;
 	clilen = sizeof(cs_addr);
 
-	//printf("sizeof(cliaddr) %d \n",clilen);
 
 	char buf[1024];
 	int bytes_read;
@@ -77,7 +96,7 @@ void serverSock::ThreadSock(){
 	tv.tv_usec = 0;
 
 	FD_ZERO(&master);
-	//FD_SET(0, &readfds);
+
 	FD_SET(sockfd, &master);
 	int fdmax = sockfd;
 
@@ -85,23 +104,21 @@ void serverSock::ThreadSock(){
 
 	int STDIN = 0;
 	int sock;
-		//if(arg != NULL){
+
 	while(!stopSock){
 
 		readfds = master;
 		int ret_sel = select(sockfd+1, &readfds, NULL, NULL, &tv);
-		//printf("ret_sel = %d\n",ret_sel);
-		//sleep(1);
 		if(FD_ISSET(sockfd, &readfds)){
-		   printf("sockfd.\n");
-		   sock = accept(sockfd, NULL, NULL);
+		   sock = accept(sockfd, (struct sockaddr *)&addr, &addrlen);
 		   if(sock < 0){
 			   cout << "Error accept"<<endl;
 		   		stopSock = true;
 		   		continue;
-		   	}
-		   	Clients.push_back(new clientSock(sock,std::bind(&serverSock::action_f,this,_1)));
-
+		   }
+		   printf("The client connection from %s is accepted\n",
+		                  inet_ntoa(addr.sin_addr));
+		   Clients.push_back(new clientSock(sock,std::bind(&serverSock::action_f,this,_1)));
 		}else{
 
 		}
